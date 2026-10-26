@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Shopping Cart</title>
+    <style>
+        :root { color-scheme: light; font-family: Arial, sans-serif; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f4f6fa; color: #1f2937; }
+        header { background: #172554; color: white; padding: 22px 8%; }
+        header h1 { margin: 0 0 6px; font-size: 1.7rem; }
+        header p { margin: 0; color: #dbeafe; }
+        main { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr); gap: 22px; max-width: 1080px; padding: 28px 18px; margin: auto; }
+        .panel { background: white; border: 1px solid #e5e7eb; border-radius: 14px; padding: 22px; box-shadow: 0 4px 16px #1725540c; }
+        h2 { margin-top: 0; }
+        .product { display: flex; justify-content: space-between; align-items: center; gap: 12px; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin: 12px 0; }
+        .product h3 { margin: 0 0 8px; }
+        .price { font-weight: bold; color: #0f766e; }
+        button { border: 0; border-radius: 8px; padding: 10px 14px; color: white; background: #2563eb; cursor: pointer; font-weight: bold; }
+        button:hover { background: #1d4ed8; }
+        .cart-row { border-bottom: 1px solid #e5e7eb; padding: 12px 0; }
+        #cartItems { padding-left: 0; list-style: none; }
+        #cartItems li { padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
+        .total-line { display: flex; justify-content: space-between; margin-top: 18px; font-size: 1.2rem; font-weight: bold; }
+        #cartCount { color: #6b7280; }
+        #emptyMessage { color: #6b7280; }
+        @media (max-width: 720px) { main { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Mini Shopping Cart</h1>
+    <p>A small demo store for Selenium WebDriver automation</p>
+</header>
+<main>
+    <section class="panel" aria-label="Products">
+        <h2>Products</h2>
+        <article class="product">
+            <div>
+                <h3>Wireless Mouse</h3>
+                <div class="price">₹499</div>
+            </div>
+            <button id="add-mouse" data-testid="add-mouse" type="button">Add to cart</button>
+        </article>
+        <article class="product">
+            <div>
+                <h3>Mechanical Keyboard</h3>
+                <div class="price">₹999</div>
+            </div>
+            <button id="add-keyboard" data-testid="add-keyboard" type="button">Add to cart</button>
+        </article>
+    </section>
+
+    <section class="panel" aria-label="Shopping cart">
+        <h2>Your Cart</h2>
+        <p id="cartCount" data-testid="cart-count">Items in cart: 0</p>
+        <p id="emptyMessage">Your cart is empty.</p>
+        <ul id="cartItems" data-testid="cart-items" aria-live="polite"></ul>
+        <div class="total-line">
+            <span>Total</span>
+            <span id="cartTotal" data-testid="cart-total">₹0</span>
+        </div>
+    </section>
+</main>
+<script>
+    const products = {
+        mouse: { name: "Wireless Mouse", price: 499 },
+        keyboard: { name: "Mechanical Keyboard", price: 999 }
+    };
+    const cart = {};
+
+    function renderCart() {
+        const cartItems = document.getElementById("cartItems");
+        const emptyMessage = document.getElementById("emptyMessage");
+        const cartTotal = document.getElementById("cartTotal");
+        const cartCount = document.getElementById("cartCount");
+        cartItems.replaceChildren();
+
+        let total = 0;
+        let count = 0;
+        for (const [id, quantity] of Object.entries(cart)) {
+            const product = products[id];
+            total += product.price * quantity;
+            count += quantity;
+
+            const item = document.createElement("li");
+            item.id = `cart-item-${id}`;
+            item.dataset.testid = item.id;
+            item.textContent = `${product.name} × ${quantity} — ₹${product.price * quantity}`;
+            cartItems.appendChild(item);
+        }
+
+        emptyMessage.hidden = count !== 0;
+        cartCount.textContent = `Items in cart: ${count}`;
+        cartTotal.textContent = `₹${total}`;
+    }
+
+    document.getElementById("add-mouse").addEventListener("click", () => {
+        cart.mouse = (cart.mouse || 0) + 1;
+        renderCart();
+    });
+    document.getElementById("add-keyboard").addEventListener("click", () => {
+        cart.keyboard = (cart.keyboard || 0) + 1;
+        renderCart();
+    });
+</script>
+</body>
+</html>
